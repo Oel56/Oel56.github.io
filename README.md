@@ -1,2 +1,3 @@
 # hihihi
-![IMG_3024](https://github.com/user-attachments/assets/5f3c4155-4e2a-4757-a4bf-3dc7e9a6346f)
+
+![IMG_3027](https://github.com/user-attachments/assets/78926df8-4233-4bea-9d49-c60be5776b7f)
