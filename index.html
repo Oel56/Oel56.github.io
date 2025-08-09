@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Shared 2-Day Countdown</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+    #countdown { font-size: 2em; margin: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Shared 2-Day Countdown</h1>
+  <div id="countdown">Loading...</div>
+
+  <script type="module">
+    // Import Firebase SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+    // Your Firebase config (replace with yours from Firebase Console)
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // Init Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const countdownEl = document.getElementById("countdown");
+    let countdownInterval;
+
+    function updateCountdown(endTime) {
+      clearInterval(countdownInterval);
+      countdownInterval = setInterval(() => {
+        const now = Date.now();
+        const timeLeft = endTime - now;
+
+        if (timeLeft <= 0) {
+          clearInterval(countdownInterval);
+          countdownEl.textContent = "Time's up!";
+          return;
+        }
+
+        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+        countdownEl.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+      }, 1000);
+    }
+
+    // Listen for countdown changes in Firebase
+    onValue(ref(db, "countdown/endTime"), (snapshot) => {
+      const endTime = snapshot.val();
+      if (endTime) {
+        updateCountdown(endTime);
+      } else {
+        countdownEl.textContent = "Not started";
+      }
+    });
+
+    // Start countdown if URL has ?start=true
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("start") === "true") {
+      const endTime = Date.now() + (2 * 24 * 60 * 60 * 1000); // 2 days
+      set(ref(db, "countdown"), { endTime });
+    }
+  </script>
+</body>
+</html>
