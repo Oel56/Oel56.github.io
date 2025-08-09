@@ -4,20 +4,30 @@
   <meta charset="UTF-8">
   <title>ahahahaha</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-    #countdown { font-size: 2em; margin: 20px; }
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: #000; /* optional: black background for contrast */
+      color: #fff;      /* optional: white text */
+    }
+    #countdown {
+      font-size: 8vw; /* scales with screen size */
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
-  <h1>Shared 2-Day Countdown</h1>
   <div id="countdown">Loading...</div>
 
   <script type="module">
-    // Import Firebase SDK
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
-    // Your Firebase config (replace with yours from Firebase Console)
     const firebaseConfig = {
       apiKey: "AIzaSyBtodWeeNaDTNiv0q15d5DWJKt_0YHl9Eg",
       authDomain: "countdown2-245ea.firebaseapp.com",
@@ -28,7 +38,6 @@
       appId: "1:989217021491:web:dc909ec89c443209810d46"
     };
 
-    // Init Firebase
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
@@ -56,7 +65,6 @@
       }, 1000);
     }
 
-    // Listen for countdown changes in Firebase
     onValue(ref(db, "countdown/endTime"), (snapshot) => {
       const endTime = snapshot.val();
       if (endTime) {
@@ -66,10 +74,9 @@
       }
     });
 
-    // Start countdown if URL has ?start=true
     const params = new URLSearchParams(window.location.search);
     if (params.get("start") === "true") {
-      const endTime = Date.now() + (2 * 24 * 60 * 60 * 1000); // 2 days
+      const endTime = Date.now() + (2 * 24 * 60 * 60 * 1000);
       set(ref(db, "countdown"), { endTime });
     }
   </script>
